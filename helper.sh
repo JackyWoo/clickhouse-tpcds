@@ -20,7 +20,7 @@ TRACE_LOG=${LOGDIR}/trace.log
 TOOLS_PATH=${SCRIPTPATH}/build/tools
 SUITE=${SUITE:-tpcds}
 CLUSTER_NAME=${CLUSTER_NAME:-cluster}
-CLIENT_TYPE="ByConity"
+CLIENT_TYPE="CH"
 ENABLE_TRACE="true"
 
 if [ -n "$SRV_USER" ]; then
@@ -31,8 +31,8 @@ if [ -n "$SRV_USER" ]; then
     fi
 fi
 
-OPTIMIZER_OPTS=" --enable_optimizer=1 --dialect_type='ANSI'"
-OPTIMIZER_SETS="set enable_optimizer=1; set dialect_type='ANSI'; "
+OPTIMIZER_OPTS=" "
+OPTIMIZER_SETS=" "
 
 if [ ! -d $LOGDIR ]; then
     mkdir -p $LOGDIR
@@ -66,7 +66,15 @@ function clickhouse_client() {
 
 # $1 is the database name
 function show_tables() {
-	clickhouse_client "show tables" -d "$1"
+	tables=`clickhouse_client "show tables" -d "$1"`
+	result=""
+	for t in ${tables[*]}
+	do
+		if [[ $t != *_local ]]; then
+			result="$result $t"
+		fi
+	done
+	echo "$result"
 }
 
 function query_file_to_id() {

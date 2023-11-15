@@ -62,4 +62,4 @@ fi
 gen_data
 
 log "Splitting generated data..."
-mv data_tpcds_${SIZE} data_tpcds_${SIZE}_orig && cd data_tpcds_${SIZE}_orig && ../split.sh ../data_tpcds_${SIZE} | tee -a $OUTPUT_LOG && cd .. && rm -r data_tpcds_${SIZE}_orig
+mv data_tpcds_${SIZE} data_tpcds_${SIZE}_orig && cd data_tpcds_${SIZE}_orig && ../split.sh /data5/home/wujianchao/data_tpcds_${SIZE} | tee -a $OUTPUT_LOG && cd .. && rm -r data_tpcds_${SIZE}_orig

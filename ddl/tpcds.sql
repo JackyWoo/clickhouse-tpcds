@@ -33,11 +33,11 @@
 -- Contributors:
 -- Gradient Systems
 --
-DROP DATABASE IF EXISTS tpcds;
-CREATE DATABASE tpcds;
+DROP DATABASE IF EXISTS tpcds ON CLUSTER LF02_CK_TS_09;
+CREATE DATABASE tpcds ON CLUSTER LF02_CK_TS_09;
 USE tpcds;
 
-CREATE TABLE customer_address
+CREATE TABLE customer_address_local ON CLUSTER LF02_CK_TS_09
 (
     ca_address_sk            Nullable(Int64),
     ca_address_id            Nullable(String),
@@ -52,9 +52,12 @@ CREATE TABLE customer_address
     ca_country               Nullable(String),
     ca_gmt_offset            Nullable(Float32),
     ca_location_type         Nullable(String)
-) ENGINE=CnchMergeTree() ORDER BY (ca_address_sk) SETTINGS enable_nullable_sorting_key=1;
+) ENGINE=MergeTree() ORDER BY (ca_address_sk) SETTINGS allow_nullable_key=1;
 
-CREATE TABLE customer_demographics
+CREATE TABLE customer_address ON CLUSTER LF02_CK_TS_09 as customer_address_local
+ENGINE = Distributed('LF02_CK_TS_09', 'tpcds', 'customer_address_local', rand());
+
+CREATE TABLE customer_demographics_local ON CLUSTER LF02_CK_TS_09
 (
     cd_demo_sk               Nullable(Int64),
     cd_gender                Nullable(String),
@@ -65,9 +68,12 @@ CREATE TABLE customer_demographics
     cd_dep_count             Nullable(Int64),
     cd_dep_employed_count    Nullable(Int64),
     cd_dep_college_count     Nullable(Int64)
-) ENGINE=CnchMergeTree() ORDER BY (cd_demo_sk) SETTINGS enable_nullable_sorting_key=1;
+) ENGINE=MergeTree() ORDER BY (cd_demo_sk) SETTINGS allow_nullable_key=1;
 
-CREATE TABLE date_dim
+CREATE TABLE customer_demographics ON CLUSTER LF02_CK_TS_09 as customer_demographics_local
+ENGINE = Distributed('LF02_CK_TS_09', 'tpcds', 'customer_demographics_local', rand());
+
+CREATE TABLE date_dim_local ON CLUSTER LF02_CK_TS_09
 (
     d_date_sk                Nullable(Int64),
     d_date_id                Nullable(String),
@@ -97,9 +103,12 @@ CREATE TABLE date_dim
     d_current_month          Nullable(String),
     d_current_quarter        Nullable(String),
     d_current_year           Nullable(String)
-) ENGINE=CnchMergeTree() ORDER BY (d_date_sk) SETTINGS enable_nullable_sorting_key=1;
+) ENGINE=MergeTree() ORDER BY (d_date_sk) SETTINGS allow_nullable_key=1;
 
-CREATE TABLE warehouse
+CREATE TABLE date_dim ON CLUSTER LF02_CK_TS_09 as date_dim_local
+ENGINE = Distributed('LF02_CK_TS_09', 'tpcds', 'date_dim_local', rand());
+
+CREATE TABLE warehouse_local ON CLUSTER LF02_CK_TS_09
 (
     w_warehouse_sk           Nullable(Int64),
     w_warehouse_id           Nullable(String),
@@ -115,9 +124,12 @@ CREATE TABLE warehouse
     w_zip                    Nullable(String),
     w_country                Nullable(String),
     w_gmt_offset             Nullable(Float32)
-) ENGINE=CnchMergeTree() ORDER BY (w_warehouse_sk) SETTINGS enable_nullable_sorting_key=1;
+) ENGINE=MergeTree() ORDER BY (w_warehouse_sk) SETTINGS allow_nullable_key=1;
 
-CREATE TABLE ship_mode
+CREATE TABLE warehouse ON CLUSTER LF02_CK_TS_09 as warehouse_local
+ENGINE = Distributed('LF02_CK_TS_09', 'tpcds', 'warehouse_local', rand());
+
+CREATE TABLE ship_mode_local ON CLUSTER LF02_CK_TS_09
 (
     sm_ship_mode_sk          Nullable(Int64),
     sm_ship_mode_id          Nullable(String),
@@ -125,9 +137,12 @@ CREATE TABLE ship_mode
     sm_code                  Nullable(String),
     sm_carrier               Nullable(String),
     sm_contract              Nullable(String)
-) ENGINE=CnchMergeTree() ORDER BY (sm_ship_mode_sk) SETTINGS enable_nullable_sorting_key=1;
+) ENGINE=MergeTree() ORDER BY (sm_ship_mode_sk) SETTINGS allow_nullable_key=1;
 
-CREATE TABLE time_dim
+CREATE TABLE ship_mode ON CLUSTER LF02_CK_TS_09 as ship_mode_local
+ENGINE = Distributed('LF02_CK_TS_09', 'tpcds', 'ship_mode_local', rand());
+
+CREATE TABLE time_dim_local ON CLUSTER LF02_CK_TS_09
 (
     t_time_sk                Nullable(Int64),
     t_time_id                Nullable(String),
@@ -139,23 +154,32 @@ CREATE TABLE time_dim
     t_shift                  Nullable(String),
     t_sub_shift              Nullable(String),
     t_meal_time              Nullable(String)
-) ENGINE=CnchMergeTree() ORDER BY (t_time_sk) SETTINGS enable_nullable_sorting_key=1;
+) ENGINE=MergeTree() ORDER BY (t_time_sk) SETTINGS allow_nullable_key=1;
 
-CREATE TABLE reason
+CREATE TABLE time_dim ON CLUSTER LF02_CK_TS_09 as time_dim_local
+ENGINE = Distributed('LF02_CK_TS_09', 'tpcds', 'time_dim_local', rand());
+
+CREATE TABLE reason_local ON CLUSTER LF02_CK_TS_09
 (
     r_reason_sk              Nullable(Int64),
     r_reason_id              Nullable(String),
     r_reason_desc            Nullable(String)
-) ENGINE=CnchMergeTree() ORDER BY (r_reason_sk) SETTINGS enable_nullable_sorting_key=1;
+) ENGINE=MergeTree() ORDER BY (r_reason_sk) SETTINGS allow_nullable_key=1;
 
-CREATE TABLE income_band
+CREATE TABLE reason ON CLUSTER LF02_CK_TS_09 as reason_local
+ENGINE = Distributed('LF02_CK_TS_09', 'tpcds', 'reason_local', rand());
+
+CREATE TABLE income_band_local ON CLUSTER LF02_CK_TS_09
 (
     ib_income_band_sk         Nullable(Int64),
     ib_lower_bound            Nullable(Int64),
     ib_upper_bound            Nullable(Int64)
-) ENGINE=CnchMergeTree() ORDER BY (ib_income_band_sk) SETTINGS enable_nullable_sorting_key=1;
+) ENGINE=MergeTree() ORDER BY (ib_income_band_sk) SETTINGS allow_nullable_key=1;
 
-CREATE TABLE item
+CREATE TABLE income_band ON CLUSTER LF02_CK_TS_09 as income_band_local
+ENGINE = Distributed('LF02_CK_TS_09', 'tpcds', 'income_band_local', rand());
+
+CREATE TABLE item_local ON CLUSTER LF02_CK_TS_09
 (
     i_item_sk                Nullable(Int64),
     i_item_id                Nullable(String),
@@ -179,9 +203,12 @@ CREATE TABLE item
     i_container              Nullable(String),
     i_manager_id             Nullable(Int64),
     i_product_name           Nullable(String)
-) ENGINE=CnchMergeTree() ORDER BY (i_item_sk) SETTINGS enable_nullable_sorting_key=1;
+) ENGINE=MergeTree() ORDER BY (i_item_sk) SETTINGS allow_nullable_key=1;
 
-CREATE TABLE store
+CREATE TABLE item ON CLUSTER LF02_CK_TS_09 as item_local
+ENGINE = Distributed('LF02_CK_TS_09', 'tpcds', 'item_local', rand());
+
+CREATE TABLE store_local ON CLUSTER LF02_CK_TS_09
 (
     s_store_sk               Nullable(Int64),
     s_store_id               Nullable(String),
@@ -212,9 +239,12 @@ CREATE TABLE store
     s_country                Nullable(String),
     s_gmt_offset             Nullable(Float32),
     s_tax_precentage         Nullable(Float32)
-) ENGINE=CnchMergeTree() ORDER BY (s_store_sk) SETTINGS enable_nullable_sorting_key=1;
+) ENGINE=MergeTree() ORDER BY (s_store_sk) SETTINGS allow_nullable_key=1;
 
-CREATE TABLE call_center
+CREATE TABLE store ON CLUSTER LF02_CK_TS_09 as store_local
+ENGINE = Distributed('LF02_CK_TS_09', 'tpcds', 'store_local', rand());
+
+CREATE TABLE call_center_local ON CLUSTER LF02_CK_TS_09
 (
     cc_call_center_sk        Nullable(Int64),
     cc_call_center_id        Nullable(String),
@@ -247,9 +277,12 @@ CREATE TABLE call_center
     cc_country               Nullable(String),
     cc_gmt_offset            Nullable(Float32),
     cc_tax_percentage        Nullable(Float32)
-) ENGINE=CnchMergeTree() ORDER BY (cc_call_center_sk) SETTINGS enable_nullable_sorting_key=1;
+) ENGINE=MergeTree() ORDER BY (cc_call_center_sk) SETTINGS allow_nullable_key=1;
 
-CREATE TABLE customer
+CREATE TABLE call_center ON CLUSTER LF02_CK_TS_09 as call_center_local
+ENGINE = Distributed('LF02_CK_TS_09', 'tpcds', 'call_center_local', rand());
+
+CREATE TABLE customer_local ON CLUSTER LF02_CK_TS_09
 (
     c_customer_sk            Nullable(Int64),
     c_customer_id            Nullable(String),
@@ -269,9 +302,12 @@ CREATE TABLE customer
     c_login                  Nullable(String),
     c_email_address          Nullable(String),
     c_last_review_date       Nullable(String)
-) ENGINE=CnchMergeTree() ORDER BY (c_customer_sk) SETTINGS enable_nullable_sorting_key=1;
+) ENGINE=MergeTree() ORDER BY (c_customer_sk) SETTINGS allow_nullable_key=1;
 
-CREATE TABLE web_site
+CREATE TABLE customer ON CLUSTER LF02_CK_TS_09 as customer_local
+ENGINE = Distributed('LF02_CK_TS_09', 'tpcds', 'customer_local', rand());
+
+CREATE TABLE web_site_local ON CLUSTER LF02_CK_TS_09
 (
     web_site_sk              Nullable(Int64),
     web_site_id              Nullable(String),
@@ -299,9 +335,12 @@ CREATE TABLE web_site
     web_country              Nullable(String),
     web_gmt_offset           Nullable(Float32),
     web_tax_percentage       Nullable(Float32)
-) ENGINE=CnchMergeTree() ORDER BY (web_site_sk) SETTINGS enable_nullable_sorting_key=1;
+) ENGINE=MergeTree() ORDER BY (web_site_sk) SETTINGS allow_nullable_key=1;
 
-CREATE TABLE store_returns
+CREATE TABLE web_site ON CLUSTER LF02_CK_TS_09 as web_site_local
+ENGINE = Distributed('LF02_CK_TS_09', 'tpcds', 'web_site_local', rand());
+
+CREATE TABLE store_returns_local ON CLUSTER LF02_CK_TS_09
 (
     sr_returned_date_sk       Nullable(Int64),
     sr_return_time_sk         Nullable(Int64),
@@ -323,18 +362,24 @@ CREATE TABLE store_returns
     sr_reversed_charge        Nullable(Float32),
     sr_store_credit           Nullable(Float32),
     sr_net_loss               Nullable(Float32)
-) ENGINE = CnchMergeTree() ORDER BY (sr_item_sk, sr_ticket_number) SETTINGS enable_nullable_sorting_key=1;
+) ENGINE = MergeTree() ORDER BY (sr_item_sk, sr_ticket_number) SETTINGS allow_nullable_key=1;
 
-CREATE TABLE household_demographics
+CREATE TABLE store_returns ON CLUSTER LF02_CK_TS_09 as store_returns_local
+ENGINE = Distributed('LF02_CK_TS_09', 'tpcds', 'store_returns_local', rand());
+
+CREATE TABLE household_demographics_local ON CLUSTER LF02_CK_TS_09
 (
     hd_demo_sk                Nullable(Int64),
     hd_income_band_sk         Nullable(Int64),
     hd_buy_potential          Nullable(String),
     hd_dep_count              Nullable(Int64),
     hd_vehicle_count          Nullable(Int64)
-) ENGINE = CnchMergeTree() ORDER BY (hd_demo_sk) SETTINGS enable_nullable_sorting_key=1;
+) ENGINE = MergeTree() ORDER BY (hd_demo_sk) SETTINGS allow_nullable_key=1;
 
-CREATE TABLE web_page
+CREATE TABLE household_demographics ON CLUSTER LF02_CK_TS_09 as household_demographics_local
+ENGINE = Distributed('LF02_CK_TS_09', 'tpcds', 'household_demographics_local', rand());
+
+CREATE TABLE web_page_local ON CLUSTER LF02_CK_TS_09
 (
     wp_web_page_sk           Nullable(Int64),
     wp_web_page_id           Nullable(String),
@@ -350,9 +395,12 @@ CREATE TABLE web_page
     wp_link_count            Nullable(Int64),
     wp_image_count           Nullable(Int64),
     wp_max_ad_count          Nullable(Int64)
-) ENGINE = CnchMergeTree() ORDER BY (wp_web_page_sk) SETTINGS enable_nullable_sorting_key=1;
+) ENGINE = MergeTree() ORDER BY (wp_web_page_sk) SETTINGS allow_nullable_key=1;
 
-CREATE TABLE promotion
+CREATE TABLE web_page ON CLUSTER LF02_CK_TS_09 as web_page_local
+ENGINE = Distributed('LF02_CK_TS_09', 'tpcds', 'web_page_local', rand());
+
+CREATE TABLE promotion_local ON CLUSTER LF02_CK_TS_09
 (
     p_promo_sk               Nullable(Int64),
     p_promo_id               Nullable(String),
@@ -373,9 +421,12 @@ CREATE TABLE promotion
     p_channel_details        Nullable(String),
     p_purpose                Nullable(String),
     p_discount_active        Nullable(String)
-) ENGINE = CnchMergeTree() ORDER BY (p_promo_sk) SETTINGS enable_nullable_sorting_key=1;
+) ENGINE = MergeTree() ORDER BY (p_promo_sk) SETTINGS allow_nullable_key=1;
 
-CREATE TABLE catalog_page
+CREATE TABLE promotion ON CLUSTER LF02_CK_TS_09 as promotion_local
+ENGINE = Distributed('LF02_CK_TS_09', 'tpcds', 'promotion_local', rand());
+
+CREATE TABLE catalog_page_local ON CLUSTER LF02_CK_TS_09
 (
     cp_catalog_page_sk       Nullable(Int64),
     cp_catalog_page_id       Nullable(String),
@@ -386,17 +437,23 @@ CREATE TABLE catalog_page
     cp_catalog_page_number   Nullable(Int64),
     cp_description           Nullable(String),
     cp_type                  Nullable(String)
-) ENGINE = CnchMergeTree() ORDER BY (cp_catalog_page_sk) SETTINGS enable_nullable_sorting_key=1;
+) ENGINE = MergeTree() ORDER BY (cp_catalog_page_sk) SETTINGS allow_nullable_key=1;
 
-CREATE TABLE inventory
+CREATE TABLE catalog_page ON CLUSTER LF02_CK_TS_09 as catalog_page_local
+ENGINE = Distributed('LF02_CK_TS_09', 'tpcds', 'catalog_page_local', rand());
+
+CREATE TABLE inventory_local ON CLUSTER LF02_CK_TS_09
 (
     inv_date_sk              Nullable(Int64),
     inv_item_sk              Nullable(Int64),
     inv_warehouse_sk         Nullable(Int64),
     inv_quantity_on_hand     Nullable(Int64)
-) ENGINE = CnchMergeTree() ORDER BY (inv_date_sk, inv_item_sk, inv_warehouse_sk) SETTINGS enable_nullable_sorting_key=1;
+) ENGINE = MergeTree() ORDER BY (inv_date_sk, inv_item_sk, inv_warehouse_sk) SETTINGS allow_nullable_key=1;
 
-CREATE TABLE catalog_returns
+CREATE TABLE inventory ON CLUSTER LF02_CK_TS_09 as inventory_local
+ENGINE = Distributed('LF02_CK_TS_09', 'tpcds', 'inventory_local', rand());
+
+CREATE TABLE catalog_returns_local ON CLUSTER LF02_CK_TS_09
 (
     cr_returned_date_sk       Nullable(Int64),
     cr_returned_time_sk       Nullable(Int64),
@@ -425,9 +482,12 @@ CREATE TABLE catalog_returns
     cr_reversed_charge        Nullable(Float32),
     cr_store_credit           Nullable(Float32),
     cr_net_loss               Nullable(Float32)
-) ENGINE = CnchMergeTree() ORDER BY (cr_item_sk, cr_order_number) SETTINGS enable_nullable_sorting_key=1;
+) ENGINE = MergeTree() ORDER BY (cr_item_sk, cr_order_number) SETTINGS allow_nullable_key=1;
 
-CREATE TABLE web_returns
+CREATE TABLE catalog_returns ON CLUSTER LF02_CK_TS_09 as catalog_returns_local
+ENGINE = Distributed('LF02_CK_TS_09', 'tpcds', 'catalog_returns_local', rand());
+
+CREATE TABLE web_returns_local ON CLUSTER LF02_CK_TS_09
 (
     wr_returned_date_sk       Nullable(Int64),
     wr_returned_time_sk       Nullable(Int64),
@@ -453,9 +513,12 @@ CREATE TABLE web_returns
     wr_reversed_charge        Nullable(Float32),
     wr_account_credit         Nullable(Float32),
     wr_net_loss               Nullable(Float32)
-) ENGINE = CnchMergeTree() ORDER BY (wr_item_sk, wr_order_number) SETTINGS enable_nullable_sorting_key=1;
+) ENGINE = MergeTree() ORDER BY (wr_item_sk, wr_order_number) SETTINGS allow_nullable_key=1;
 
-CREATE TABLE web_sales
+CREATE TABLE web_returns ON CLUSTER LF02_CK_TS_09 as web_returns_local
+ENGINE = Distributed('LF02_CK_TS_09', 'tpcds', 'web_returns_local', rand());
+
+CREATE TABLE web_sales_local ON CLUSTER LF02_CK_TS_09
 (
     ws_sold_date_sk           Nullable(Int64),
     ws_sold_time_sk           Nullable(Int64),
@@ -491,9 +554,12 @@ CREATE TABLE web_sales
     ws_net_paid_inc_ship      Nullable(Float32),
     ws_net_paid_inc_ship_tax  Nullable(Float32),
     ws_net_profit             Nullable(Float32)
-) ENGINE = CnchMergeTree() ORDER BY (ws_item_sk, ws_order_number) SETTINGS enable_nullable_sorting_key=1;
+) ENGINE = MergeTree() ORDER BY (ws_item_sk, ws_order_number) SETTINGS allow_nullable_key=1;
 
-CREATE TABLE catalog_sales
+CREATE TABLE web_sales ON CLUSTER LF02_CK_TS_09 as web_sales_local
+ENGINE = Distributed('LF02_CK_TS_09', 'tpcds', 'web_sales_local', rand());
+
+CREATE TABLE catalog_sales_local ON CLUSTER LF02_CK_TS_09
 (
     cs_sold_date_sk           Nullable(Int64),
     cs_sold_time_sk           Nullable(Int64),
@@ -529,9 +595,12 @@ CREATE TABLE catalog_sales
     cs_net_paid_inc_ship      Nullable(Float32),
     cs_net_paid_inc_ship_tax  Nullable(Float32),
     cs_net_profit             Nullable(Float32)
-) ENGINE = CnchMergeTree() ORDER BY (cs_item_sk, cs_order_number) SETTINGS enable_nullable_sorting_key=1;
+) ENGINE = MergeTree() ORDER BY (cs_item_sk, cs_order_number) SETTINGS allow_nullable_key=1;
 
-CREATE TABLE store_sales
+CREATE TABLE catalog_sales ON CLUSTER LF02_CK_TS_09 as catalog_sales_local
+ENGINE = Distributed('LF02_CK_TS_09', 'tpcds', 'catalog_sales_local', rand());
+
+CREATE TABLE store_sales_local ON CLUSTER LF02_CK_TS_09
 (
     ss_sold_date_sk           Nullable(Int64),
     ss_sold_time_sk           Nullable(Int64),
@@ -556,5 +625,8 @@ CREATE TABLE store_sales
     ss_net_paid               Nullable(Float32),
     ss_net_paid_inc_tax       Nullable(Float32),
     ss_net_profit             Nullable(Float32)
-) ENGINE = CnchMergeTree() ORDER BY (ss_item_sk, ss_ticket_number) SETTINGS enable_nullable_sorting_key=1;
+) ENGINE = MergeTree() ORDER BY (ss_item_sk, ss_ticket_number) SETTINGS allow_nullable_key=1;
+
+CREATE TABLE store_sales ON CLUSTER LF02_CK_TS_09 as store_sales_local
+ENGINE = Distributed('LF02_CK_TS_09', 'tpcds', 'store_sales_local', rand());
 

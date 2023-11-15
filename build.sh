@@ -17,6 +17,7 @@
 set -e
 source ./helper.sh
 
+
 build_tools() {
     local SOURCE_PATH=${SCRIPTPATH}/tpcds-v2.13.0rc1/tools
     mkdir -p ${TOOLS_PATH}
